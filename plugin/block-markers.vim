@@ -12,4 +12,4 @@ endif
 let g:loaded_addblockmarkers = 1
 
 " Exposes the plugin's functions for use as commands in Neovim.
-command! -nargs=0 BlockMarkers lua require("add-block-markers").add_block_markers()
+command! -nargs=0 BlockMarkers lua require("nvim-block-markers").add_block_markers()
