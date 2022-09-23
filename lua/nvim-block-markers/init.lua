@@ -7,12 +7,16 @@
 
 local M = {}
 
-M.add_block_markers = function()
-    vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("bmark"), 0, -1)
+M.toggle_block_markers = function()
+    local ns_id = vim.api.nvim_create_namespace("bmark")
+
+    if #vim.api.nvim_buf_get_extmarks(0, ns_id, 0, -1, {}) > 0 then
+        vim.api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
+        return
+    end
 
     local language = "python"
     local bufnr = vim.fn.bufnr("%")
-    local ns_id = vim.api.nvim_create_namespace("bmark")
 
     local language_tree = vim.treesitter.get_parser(bufnr, language)
     local syntax_tree = language_tree:parse()
@@ -43,7 +47,7 @@ M.add_block_markers = function()
                 }
 
                 -- Add virtual line: https://jdhao.github.io/2021/09/09/nvim_use_virtual_text/
-                local mark_id = vim.api.nvim_buf_set_extmark(bufnr, ns_id, line_num, 0, opts)
+                local mark_id = vim.api.nvim_buf_set_extmark(0, ns_id, line_num, 0, opts)
             end
         end
     end
