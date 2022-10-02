@@ -4,16 +4,17 @@
 -- https://www.youtube.com/watch?v=86sgKa0jeO4&ab_channel=s1n7ax
 --
 -- Clear everything again in the current buffer
-
 local M = {}
 
-M.toggle_block_markers = function()
-    local ns_id = vim.api.nvim_create_namespace("bmark")
+function M:enable_block_markers()
+    self.refresh_block_markers()
 
-    if #vim.api.nvim_buf_get_extmarks(0, ns_id, 0, -1, {}) > 0 then
-        vim.api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
-        return
-    end
+    vim.api.nvim_create_autocmd({"InsertLeave"},
+                                {callback = self.refresh_block_markers, pattern = {"*.py"}})
+end
+
+function M:add_block_markers()
+    local ns_id = vim.api.nvim_create_namespace("bmark")
 
     local language = "python"
     local bufnr = vim.fn.bufnr("%")
@@ -30,9 +31,8 @@ M.toggle_block_markers = function()
     }
 
     for _, params in pairs(params_t) do
-        local query = vim.treesitter.parse_query(
-            language, string.format(query_template, params.target)
-        )
+        local query = vim.treesitter.parse_query(language,
+                                                 string.format(query_template, params.target))
 
         for _, _, metadata in query:iter_matches(root, bufnr) do
             line_num = metadata[1].range[1] - 1
@@ -51,6 +51,33 @@ M.toggle_block_markers = function()
             end
         end
     end
+end
+
+function M:refresh_block_markers()
+    local ns_id = vim.api.nvim_create_namespace("bmark")
+
+    self.clear_block_markers(ns_id)
+    self.add_block_markers()
+end
+
+function M:clear_block_markers(ns_id) vim.api.nvim_buf_clear_namespace(0, ns_id, 0, -1) end
+
+function M:disable_block_markers()
+    local ns_id = vim.api.nvim_create_namespace("bmark")
+
+    if #vim.api.nvim_buf_get_extmarks(0, ns_id, 0, -1, {}) > 0 then
+        self.clear_block_markers(ns_id)
+
+        return true
+    end
+
+    return false
+end
+
+function M:toggle_block_markers()
+    local disabled = self.disable_block_markers()
+
+    if not disabled then self.enable_block_markers() end
 end
 
 return M
