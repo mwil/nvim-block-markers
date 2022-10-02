@@ -10,7 +10,7 @@ function M:enable_block_markers()
     self:refresh_block_markers()
 
     vim.api.nvim_create_autocmd({"InsertLeave"},
-                                {callback = M:refresh_block_markers, pattern = {"*.py"}})
+                                {callback = M.refresh_block_markers, pattern = {"*.py"}})
 end
 
 function M:add_block_markers()
