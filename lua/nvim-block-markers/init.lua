@@ -53,14 +53,14 @@ function M:add_block_markers()
     end
 end
 
+function M:clear_block_markers(ns_id) vim.api.nvim_buf_clear_namespace(0, ns_id, 0, -1) end
+
 function M:refresh_block_markers()
     local ns_id = vim.api.nvim_create_namespace("bmark")
 
-    self:clear_block_markers(ns_id)
-    self:add_block_markers()
+    M:clear_block_markers(ns_id)
+    M:add_block_markers()
 end
-
-function M:clear_block_markers(ns_id) vim.api.nvim_buf_clear_namespace(0, ns_id, 0, -1) end
 
 function M:disable_block_markers()
     local ns_id = vim.api.nvim_create_namespace("bmark")
