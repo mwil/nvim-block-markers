@@ -12,6 +12,6 @@ endif
 let g:loaded_addblockmarkers = 1
 
 " Exposes the plugin's functions for use as commands in Neovim.
-command! -nargs=0 BlockMarkerToggle lua require("nvim-block-markers").toggle_block_markers()
-command! -nargs=0 BlockMarkerEnable lua require("nvim-block-markers").enable_block_markers()
-command! -nargs=0 BlockMarkerDisable lua require("nvim-block-markers").disable_block_markers()
+command! -nargs=0 BlockMarkerToggle lua require("nvim-block-markers"):toggle_block_markers()
+command! -nargs=0 BlockMarkerEnable lua require("nvim-block-markers"):enable_block_markers()
+command! -nargs=0 BlockMarkerDisable lua require("nvim-block-markers"):disable_block_markers()
