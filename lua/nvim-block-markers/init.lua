@@ -7,10 +7,10 @@
 local M = {}
 
 function M:enable_block_markers()
-    self.refresh_block_markers()
+    self:refresh_block_markers()
 
     vim.api.nvim_create_autocmd({"InsertLeave"},
-                                {callback = self.refresh_block_markers, pattern = {"*.py"}})
+                                {callback = M:refresh_block_markers, pattern = {"*.py"}})
 end
 
 function M:add_block_markers()
@@ -56,8 +56,8 @@ end
 function M:refresh_block_markers()
     local ns_id = vim.api.nvim_create_namespace("bmark")
 
-    self.clear_block_markers(ns_id)
-    self.add_block_markers()
+    self:clear_block_markers(ns_id)
+    self:add_block_markers()
 end
 
 function M:clear_block_markers(ns_id) vim.api.nvim_buf_clear_namespace(0, ns_id, 0, -1) end
@@ -66,7 +66,7 @@ function M:disable_block_markers()
     local ns_id = vim.api.nvim_create_namespace("bmark")
 
     if #vim.api.nvim_buf_get_extmarks(0, ns_id, 0, -1, {}) > 0 then
-        self.clear_block_markers(ns_id)
+        self:clear_block_markers(ns_id)
 
         return true
     end
@@ -75,9 +75,9 @@ function M:disable_block_markers()
 end
 
 function M:toggle_block_markers()
-    local disabled = self.disable_block_markers()
+    local disabled = self:disable_block_markers()
 
-    if not disabled then self.enable_block_markers() end
+    if not disabled then self:enable_block_markers() end
 end
 
 return M
