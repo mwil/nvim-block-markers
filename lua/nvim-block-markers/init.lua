@@ -35,7 +35,7 @@ function M:add_block_markers()
     }
 
     for _, params in pairs(params_t) do
-        local query = ts.query.parse_query(language, string.format(query_template, params.target))
+        local query = ts.query.parse(language, string.format(query_template, params.target))
 
         for _, _, metadata in query:iter_matches(root, bufnr) do
             local line_num = metadata[1].range[1] - 1
