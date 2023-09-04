@@ -41,7 +41,7 @@ function M:add_block_markers()
             local line_num = metadata[1].range[1] - 1
 
             -- make sure there is no text on that line already
-            if #vim.getbufoneline(bufnr, line_num + 1) == 0 then
+            if #vim.fn.getbufoneline(bufnr, line_num + 1) == 0 then
                 local opts = {
                     end_line = line_num,
                     id = line_num,
