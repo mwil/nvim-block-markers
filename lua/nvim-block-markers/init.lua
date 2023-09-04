@@ -13,8 +13,8 @@ local M = {}
 function M:enable_block_markers()
     self:refresh_block_markers()
 
-    api.nvim_create_autocmd({"InsertLeave"},
-        {callback = M.refresh_block_markers, pattern = {"*.py"}})
+    api.nvim_create_autocmd({ "InsertLeave" },
+        { callback = M.refresh_block_markers, pattern = { "*.py" } })
 end
 
 function M:add_block_markers()
@@ -29,9 +29,9 @@ function M:add_block_markers()
 
     local query_template = "((%s) @capture (#offset! @capture))"
     local params_t = {
-        func = {target = "function_definition", marker = string.rep("~", 100)},
-        decofunc = {target = "decorated_definition", marker = string.rep("~", 100)},
-        class = {target = "class_definition", marker = string.rep("#", 100)}
+        func = { target = "function_definition", marker = string.rep("~", 100) },
+        decofunc = { target = "decorated_definition", marker = string.rep("~", 100) },
+        class = { target = "class_definition", marker = string.rep("#", 100) }
     }
 
     for _, params in pairs(params_t) do
@@ -41,11 +41,11 @@ function M:add_block_markers()
             local line_num = metadata[1].range[1] - 1
 
             -- make sure there is no text on that line already
-            if #vim.filetype.getlines(bufnr, line_num + 1) == 0 then
+            if #vim.getbufoneline(bufnr, line_num + 1) == 0 then
                 local opts = {
                     end_line = line_num,
                     id = line_num,
-                    virt_text = {{params.marker, "Comment"}},
+                    virt_text = { { params.marker, "Comment" } },
                     virt_text_pos = "overlay"
                 }
 
