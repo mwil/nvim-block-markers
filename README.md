@@ -4,7 +4,7 @@ A Neovim plugin that automatically adds visual markers for Python code blocks us
 
 ## Features
 
-- **Automatic Detection**: Automatically enables markers when opening Python files
+- **Automatic Detection**: Automatically enables markers when opening Python files (.py, .pyw, .pyi, shebang detection)
 - **Real-time Updates**: Markers update instantly as you edit code
 - **Smart Markers**:
   - `~~~` for function definitions and decorated functions  
@@ -61,7 +61,7 @@ use {
 
 The plugin works automatically:
 
-1. **Open any Python file** (`.py` extension or `filetype=python`)
+1. **Open any Python file** (`.py`, `.pyw`, `.pyi` extensions, `filetype=python`, or Python shebang)
 2. **Markers appear automatically** above functions and classes
 3. **Edit your code** - markers update in real-time
 4. **Switch between buffers** - each maintains independent state
@@ -103,13 +103,20 @@ Or using the `config` function:
   "mwil/nvim-block-markers", 
   ft = "python",
   config = function()
-    require("nvim-block-markers").setup({
+    local config = require("nvim-block-markers").setup({
       auto_enable = false,
       events = { "BufWritePost", "InsertLeave" }
     })
+    -- setup() returns the final config for debugging
   end
 }
 ```
+
+**Configuration Validation**: The setup function validates input types and shows helpful warnings for invalid values:
+- `auto_enable` must be a boolean
+- `events` must be a table
+- Invalid values are ignored with warning messages
+- Returns the final configuration for debugging
 
 #### Manual Configuration
 
@@ -162,6 +169,15 @@ vim.keymap.set("n", "<leader>bd", ":BlockMarkerDisable<CR>", { desc = "Disable b
 
 ## How It Works
 
+The plugin automatically detects Python files through multiple methods:
+
+### Python File Detection
+- **File extensions**: `.py` (standard), `.pyw` (Windows), `.pyi` (type stubs)
+- **Filetype detection**: `filetype=python` 
+- **Shebang detection**: Files starting with `#!/usr/bin/python` or similar
+- **Extensionless files**: Checks first line for Python shebang
+
+### Code Analysis
 The plugin uses Neovim's Treesitter to parse Python code and identify:
 
 - **Function definitions** (`def function_name():`)
@@ -197,6 +213,12 @@ For each detected block, it adds virtual text markers above the definition line 
    ```vim
    :lua print(require("nvim-block-markers").config.auto_enable)
    ```
+
+4. **Validate configuration**: Check for configuration warnings
+   ```vim
+   :messages
+   ```
+   Look for `[nvim-block-markers]` warnings about invalid configuration
 
 ### Markers Not Updating
 
