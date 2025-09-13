@@ -180,7 +180,7 @@ function M:add_block_markers(bufnr)
                 if line_content == "" then
                     local opts = {
                         end_line = marker_line,
-                        id = marker_line,
+                        -- Let Neovim auto-generate unique IDs instead of using line numbers
                         virt_text = {{params.marker, "Comment"}},
                         virt_text_pos = "overlay"
                     }
