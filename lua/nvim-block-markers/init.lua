@@ -160,7 +160,7 @@ function M:add_block_markers(bufnr)
     local syntax_tree = language_tree:parse()
     local root = syntax_tree[1]:root()
 
-    local query_template = "((%s) @capture (#offset! @capture))"
+    local query_template = "(%s) @capture"
     local params_t = {
         func = {target = "function_definition", marker = string.rep("~", 100)},
         decofunc = {target = "decorated_definition", marker = string.rep("~", 100)},
@@ -168,13 +168,15 @@ function M:add_block_markers(bufnr)
     }
 
     for _, params in pairs(params_t) do
-        local query = ts.parse_query(language, string.format(query_template, params.target))
+        local query = vim.treesitter.query.parse(language, string.format(query_template, params.target))
 
-        for _, _, metadata in query:iter_matches(root, bufnr) do
-            local line_num = metadata[1].range[1] - 1
+        for _, node, metadata in query:iter_captures(root, bufnr, 0, -1) do
+            local start_row, _, _, _ = node:range()
+            local line_num = start_row
 
-            -- make sure there is no text on that line already
-            if #vim.filetype.getlines(bufnr, line_num + 1) == 0 then
+            -- make sure there is no text on that line already (truly empty lines only)
+            local line_content = api.nvim_buf_get_lines(bufnr, line_num, line_num + 1, false)[1] or ""
+            if line_content == "" then
                 local opts = {
                     end_line = line_num,
                     id = line_num,
