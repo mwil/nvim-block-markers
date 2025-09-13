@@ -177,7 +177,7 @@ function M:add_block_markers(bufnr)
             -- Only place marker if line above exists and is empty
             if marker_line >= 0 then
                 local line_content = api.nvim_buf_get_lines(bufnr, marker_line, marker_line + 1, false)[1] or ""
-                if line_content == "" then
+                if line_content:match("^%s*$") then  -- Allow empty lines or whitespace-only lines
                     local opts = {
                         end_line = marker_line,
                         -- Let Neovim auto-generate unique IDs instead of using line numbers
