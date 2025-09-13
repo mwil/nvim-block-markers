@@ -76,7 +76,7 @@ local function is_python_buffer(bufnr)
 end
 
 -- Setup autocommands (called once on plugin load)
-function M:setup()
+function M.init_autocommands()
     if autocommand_group then
         return -- Already set up
     end
@@ -233,6 +233,6 @@ function M:toggle_block_markers(bufnr)
 end
 
 -- Initialize the plugin
-M.setup()
+M.init_autocommands()
 
 return M
