@@ -172,20 +172,22 @@ function M:add_block_markers(bufnr)
 
         for _, node, metadata in query:iter_captures(root, bufnr, 0, -1) do
             local start_row, _, _, _ = node:range()
-            local line_num = start_row
+            local marker_line = start_row - 1  -- Place marker on line above definition
+            
+            -- Only place marker if line above exists and is empty
+            if marker_line >= 0 then
+                local line_content = api.nvim_buf_get_lines(bufnr, marker_line, marker_line + 1, false)[1] or ""
+                if line_content == "" then
+                    local opts = {
+                        end_line = marker_line,
+                        id = marker_line,
+                        virt_text = {{params.marker, "Comment"}},
+                        virt_text_pos = "overlay"
+                    }
 
-            -- make sure there is no text on that line already (truly empty lines only)
-            local line_content = api.nvim_buf_get_lines(bufnr, line_num, line_num + 1, false)[1] or ""
-            if line_content == "" then
-                local opts = {
-                    end_line = line_num,
-                    id = line_num,
-                    virt_text = {{params.marker, "Comment"}},
-                    virt_text_pos = "overlay"
-                }
-
-                -- Add virtual line: https://jdhao.github.io/2021/09/09/nvim_use_virtual_text/
-                local mark_id = api.nvim_buf_set_extmark(bufnr, ns_id, line_num, 0, opts)
+                    -- Add virtual line: https://jdhao.github.io/2021/09/09/nvim_use_virtual_text/
+                    local mark_id = api.nvim_buf_set_extmark(bufnr, ns_id, marker_line, 0, opts)
+                end
             end
         end
     end
