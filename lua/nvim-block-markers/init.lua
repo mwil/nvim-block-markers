@@ -23,7 +23,17 @@ M.config = vim.deepcopy(default_config)
 -- Setup function for lazy.nvim opts support
 function M.setup(opts)
     opts = opts or {}
+    -- Basic validation
+    if opts.auto_enable ~= nil and type(opts.auto_enable) ~= "boolean" then
+        vim.notify("[nvim-block-markers] Invalid value for 'auto_enable': expected boolean", vim.log.levels.WARN)
+        opts.auto_enable = nil
+    end
+    if opts.events ~= nil and type(opts.events) ~= "table" then
+        vim.notify("[nvim-block-markers] Invalid value for 'events': expected table", vim.log.levels.WARN)
+        opts.events = nil
+    end
     M.config = vim.tbl_deep_extend("force", default_config, opts)
+    return M.config
 end
 
 -- Buffer state tracking
@@ -46,7 +56,23 @@ local function is_python_buffer(bufnr)
     
     local filetype = vim.bo[bufnr].filetype
     local filename = api.nvim_buf_get_name(bufnr)
-    return filetype == 'python' or filename:match('%.py$')
+    
+    -- Check filetype first
+    if filetype == 'python' then
+        return true
+    end
+    -- Check for .py, .pyw, .pyi extensions
+    if filename:match('%.py$') or filename:match('%.pyw$') or filename:match('%.pyi$') then
+        return true
+    end
+    -- Check for extensionless files with Python shebang
+    if filename ~= "" and not filename:match('%.%w+$') then
+        local first_line = api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] or ""
+        if first_line:match('^#!.*/python[0-9.]*') then
+            return true
+        end
+    end
+    return false
 end
 
 -- Setup autocommands (called once on plugin load)
@@ -205,6 +231,6 @@ function M:toggle_block_markers(bufnr)
 end
 
 -- Initialize the plugin
-M:setup()
+M.setup()
 
 return M
