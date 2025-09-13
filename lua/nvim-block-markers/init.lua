@@ -170,13 +170,13 @@ function M:add_block_markers(bufnr)
     for _, params in pairs(params_t) do
         local query = vim.treesitter.query.parse(language, string.format(query_template, params.target))
 
-        for id, node, metadata in query:iter_captures(root, bufnr, 0, -1) do
+        for _, node, metadata in query:iter_captures(root, bufnr, 0, -1) do
             local start_row, _, _, _ = node:range()
             local line_num = start_row
 
-            -- make sure there is no text on that line already
+            -- make sure there is no text on that line already (truly empty lines only)
             local line_content = api.nvim_buf_get_lines(bufnr, line_num, line_num + 1, false)[1] or ""
-            if line_content:match("^%s*$") then
+            if line_content == "" then
                 local opts = {
                     end_line = line_num,
                     id = line_num,
